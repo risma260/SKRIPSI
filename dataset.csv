@@ -1,4 +1,4 @@
-No.;Usia;Jenis Kelamin;Trombosit;HCT;HB;Diagnosis;LOS
+No.;Usia;Jenis_Kelamin;Trombosit;HCT;HB;Diagnosis;LOS
 1;9;L;123.000;36.6;11.2;DBD;5
 2;20;P;42.000;40.4;12.9;DBD;6
 3;5;P;54.000;34.8;11.9;DBD;7
