@@ -1,4 +1,4 @@
-rm,jenis_kelamin,umur,jenis_demam,hemoglobin,hct,trombosit,tgl_masuk,tgl_keluar,lama_dirawat
+rm,jenis_kelamin,umur,jenis_demam,hb,hct,trombosit,tgl_masuk,tgl_keluar,lama_dirawat
 389753,Perempuan,34,DBD,"13,2","38,6",135.000,02/01/2024,04/01/2024,3
 315855,Laki-laki,8,DBD,"13,1","37,2",152.000,03/01/2024,09/01/2024,7
 390092,Laki-laki,8,DD,"12,6","35,4",160.000,06/01/2024,12/01/2024,7
