@@ -1,0 +1,15 @@
+setuptools>=65.5.1
+streamlit>=1.28.1
+numpy
+scikit-learn==1.3.1
+pandas
+joblib
+pip==24.3.1
+seaborn
+matplotlib
+plotly
+Pillow
+streamlit-option-menu
+xgboost
+setuptools
+
