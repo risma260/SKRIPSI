@@ -3,6 +3,7 @@ import pandas as pd
 import pickle
 from streamlit_option_menu import option_menu
 import numpy as np
+import math
 from sklearn.preprocessing import MinMaxScaler, LabelEncoder
 from sklearn.impute import KNNImputer
 import xgboost as xgb
