@@ -97,8 +97,8 @@ if (selected2 == 'akurasi') :
         df = st.session_state['processed_data']
         
         # Split data
-        X = df.drop(columns=['lama_rawat'])
-        y = df['lama_rawat']
+        X = df.drop(columns=['lama_dirawat'])
+        y = df['lama_dirawat']
         X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
         
         # Hyperparameter tuning
