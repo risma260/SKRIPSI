@@ -149,6 +149,13 @@ if (selected2 == 'akurasi') :
 if selected2 == 'Implementasi':
     st.subheader('Implementasi')
 
+    try:
+    with open('model_xgboost.pkl', 'rb') as file:
+        dbd_model = pickle.load(file)
+    print("Model berhasil dimuat.")
+    except Exception as e:
+    print(f"Error saat memuat model: {e}")
+
     # Gunakan model dari session_state jika tersedia
     if 'xgb_model' in st.session_state:
         dbd_model = st.session_state['xgb_model']
