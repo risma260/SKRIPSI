@@ -149,45 +149,56 @@ if (selected2 == 'akurasi') :
 if selected2 == 'Implementasi':
     st.subheader('Implementasi')
 
-    try:
-        with open('model_xgboost.pkl', 'rb') as file:
-            dbd_model = pickle.load(file)
-            print("Model berhasil dimuat.")
-    except Exception as e:
-        print(f"Error saat memuat model: {e}")
-
-    # Gunakan model dari session_state jika tersedia
-    if 'xgb_model' in st.session_state:
-        dbd_model = st.session_state['xgb_model']
-    else:
-        # Jika tidak ada model di session_state, baca dari file pickle
+    # Memastikan model dimuat sekali saja ke session_state
+    if 'xgb_model' not in st.session_state:
         try:
-            dbd_model = pickle.load(open('model_xgboost.pkl', 'rb'))
-            st.session_state['xgb_model'] = dbd_model
+            with open('model_xgboost.pkl', 'rb') as file:
+                st.session_state['xgb_model'] = pickle.load(file)
+            st.success("Model berhasil dimuat.")
         except FileNotFoundError:
             st.error("Model belum tersedia. Silakan jalankan training di halaman Akurasi terlebih dahulu.")
-            dbd_model = None
+        except Exception as e:
+            st.error(f"Terjadi kesalahan saat memuat model: {e}")
+
+    # Cek apakah model tersedia sebelum melanjutkan
+    if 'xgb_model' in st.session_state:
+        dbd_model = st.session_state['xgb_model']
         
-    # Membagi kolom untuk input
-    col1, col2 = st.columns(2)
+        # Membagi kolom untuk input
+        col1, col2 = st.columns(2)
 
-    with col1:
-        umur = st.number_input('Umur (tahun)', min_value=0)
-        trombosit = st.number_input('Jumlah Trombosit (x10^3/μL)', min_value=0)
-        hct = st.number_input('Hematokrit (HCT %)', min_value=0.0, step=0.1)
+        with col1:
+            umur = st.number_input('Umur (tahun)', min_value=0)
+            trombosit = st.number_input('Jumlah Trombosit (x10^3/μL)', min_value=0)
+            hct = st.number_input('Hematokrit (HCT %)', min_value=0.0, step=0.1)
 
-    with col2:
-        hemoglobin = st.number_input('Hemoglobin (HB g/dL)', min_value=0.0, step=0.1)
-        jenis_kelamin = st.selectbox('Jenis Kelamin', ['Laki-laki', 'Perempuan'])
-        jenis_demam = st.selectbox('Jenis Demam', ['DD', 'DBD', 'DSS'])
+        with col2:
+            hemoglobin = st.number_input('Hemoglobin (HB g/dL)', min_value=0.0, step=0.1)
+            jenis_kelamin = st.selectbox('Jenis Kelamin', ['Laki-laki', 'Perempuan'])
+            jenis_demam = st.selectbox('Jenis Demam', ['DD', 'DBD', 'DSS'])
 
+        # Encoding fitur kategorikal
+        jenis_kelamin_mapping = {'Laki-laki': 0, 'Perempuan': 1}
+        jenis_demam_mapping = {'DD': 0, 'DBD': 1, 'DSS': 2}
 
-    # Membuat tombol untuk prediksi
-    if st.button('Prediksi Lama Rawat Inap'):
-        # Prediksi dengan model
-        prediksi_lama_rawat = dbd_model.predict([[umur, trombosit, hct, hemoglobin, jenis_kelamin, jenis_demam]])
+        jenis_kelamin_encoded = jenis_kelamin_mapping[jenis_kelamin]
+        jenis_demam_encoded = jenis_demam_mapping[jenis_demam]
 
-        # Menampilkan hasil prediksi
-        st.subheader('Hasil Prediksi')
-        st.write(f"Perkiraan lama rawat inap: {round(prediksi_lama_rawat[0])} hari")
-        
+        # Tombol prediksi
+        if st.button('Prediksi Lama Rawat Inap'):
+            try:
+                # Format input untuk prediksi
+                input_data = np.array([[umur, trombosit, hct, hemoglobin, jenis_kelamin_encoded, jenis_demam_encoded]])
+                
+                # Prediksi dengan model
+                prediksi_lama_rawat = dbd_model.predict(input_data)
+
+                # Menampilkan hasil prediksi
+                st.subheader('Hasil Prediksi')
+                st.write(f"Perkiraan lama rawat inap: {round(prediksi_lama_rawat[0])} hari")
+
+            except Exception as e:
+                st.error(f"Terjadi kesalahan saat melakukan prediksi: {e}")
+
+    else:
+        st.warning("Model belum tersedia. Silakan jalankan training di halaman Akurasi terlebih dahulu.")
