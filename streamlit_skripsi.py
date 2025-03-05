@@ -151,7 +151,7 @@ if selected2 == 'Implementasi':
 
     try:
         with open('model_xgboost.pkl', 'rb') as file:
-        dbd_model = pickle.load(file)
+            dbd_model = pickle.load(file)
     print("Model berhasil dimuat.")
     except Exception as e:
     print(f"Error saat memuat model: {e}")
