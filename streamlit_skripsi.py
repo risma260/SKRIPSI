@@ -117,11 +117,15 @@ if (selected2 == 'akurasi') :
         y_train_pred = best_model.predict(X_train)
         y_test_pred = best_model.predict(X_test)
         
+         # Evaluasi model
         train_mse = mean_squared_error(y_train, y_train_pred)
         test_mse = mean_squared_error(y_test, y_test_pred)
-        
-        st.write(f"MSE Train Set: {train_mse:.4f}")
-        st.write(f"MSE Test Set: {test_mse:.4f}")
+        train_rmse = math.sqrt(train_mse)
+        test_rmse = math.sqrt(test_mse)
+
+        # Menampilkan hasil evaluasi
+        st.write(f"**RMSE Train Set:** {train_rmse:.4f}")
+        st.write(f"**RMSE Test Set:** {test_rmse:.4f}")
         
         # Plot hasil prediksi vs aktual
         fig, ax = plt.subplots(figsize=(8,5))
