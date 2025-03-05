@@ -67,7 +67,7 @@ def preprocess_data(df):
     imputer = KNNImputer(n_neighbors=5)
     df.iloc[:, :] = imputer.fit_transform(df)
     
-    return df
+    return df, scaler
 
 # Halaman Preprocessing
 if selected2 == 'Preprocessing':
@@ -79,10 +79,12 @@ if selected2 == 'Preprocessing':
         st.write("Data Awal:")
         st.dataframe(df)
 
-        df_processed = preprocess_data(df)
+        df_processed, scaler = preprocess_data(df)
 
-        # Simpan hasil preprocessing ke session_state agar bisa dipakai di Akurasi
-        st.session_state['processed_data'] = df_processed
+        # Simpan hasil preprocessing dan scaler ke session_state
+        st.session_state["processed_data"] = df_processed
+        joblib.dump(scaler, "scaler.pkl")  # Simpan scaler ke file
+        st.success("Scaler berhasil disimpan sebagai 'scaler.pkl'!")
 
         st.write("### Data Setelah Preprocessing:")
         st.dataframe(df_processed)
@@ -146,25 +148,27 @@ if (selected2 == 'akurasi') :
         st.warning("Silakan lakukan preprocessing data terlebih dahulu di halaman Preprocessing.")
 
 # Halaman Implementasi
-if selected2 == 'Implementasi':
-    st.subheader('Implementasi')
+if selected2 == "Implementasi":
+    st.subheader("Implementasi")
 
-    # Memastikan model dimuat sekali saja ke session_state
-    if 'xgb_model' not in st.session_state:
-        try:
-            with open('model_xgboost.pkl', 'rb') as file:
-                st.session_state['xgb_model'] = pickle.load(file)
-            st.success("Model berhasil dimuat.")
-        except FileNotFoundError:
-            st.error("Model belum tersedia. Silakan jalankan training di halaman Akurasi terlebih dahulu.")
-        except Exception as e:
-            st.error(f"Terjadi kesalahan saat memuat model: {e}")
+    # Load model
+    try:
+        with open("model_xgboost.pkl", "rb") as file:
+            dbd_model = pickle.load(file)
+        st.success("Model berhasil dimuat.")
+    except FileNotFoundError:
+        st.error("Model belum tersedia. Silakan jalankan training di halaman Akurasi terlebih dahulu.")
+        dbd_model = None
 
-    # Cek apakah model tersedia sebelum melanjutkan
-    if 'xgb_model' in st.session_state:
-        dbd_model = st.session_state['xgb_model']
-        
-        # Membagi kolom untuk input
+    # Load scaler
+    try:
+        scaler = joblib.load("scaler.pkl")
+        st.success("Scaler berhasil dimuat.")
+    except FileNotFoundError:
+        st.error("Scaler belum tersedia. Silakan jalankan preprocessing di halaman Preprocessing terlebih dahulu.")
+        scaler = None
+
+    if dbd_model and scaler:
         col1, col2 = st.columns(2)
 
         with col1:
