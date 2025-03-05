@@ -150,7 +150,7 @@ if selected2 == 'Implementasi':
     st.subheader('Implementasi')
 
     try:
-    with open('model_xgboost.pkl', 'rb') as file:
+        with open('model_xgboost.pkl', 'rb') as file:
         dbd_model = pickle.load(file)
     print("Model berhasil dimuat.")
     except Exception as e:
