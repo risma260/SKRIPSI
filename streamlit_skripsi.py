@@ -2,6 +2,14 @@ import streamlit as st
 import pandas as pd
 import pickle
 from streamlit_option_menu import option_menu
+import numpy as np
+from sklearn.preprocessing import MinMaxScaler, LabelEncoder
+from sklearn.impute import KNNImputer
+import xgboost as xgb
+from sklearn.model_selection import train_test_split, GridSearchCV
+from sklearn.metrics import mean_squared_error
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 
 # Judul web
@@ -35,28 +43,102 @@ if (selected2 == 'Data') :
             st.error(f"Terjadi kesalahan saat membaca file: {e}")
 
 
+# Fungsi untuk memproses data
+@st.cache_data
+def preprocess_data(df):
+    # Memilih fitur yang digunakan
+    selected_features = ['jenis_kelamin', 'jenis_demam', 'trombosit', 'leukosit', 'hematokrit', 'lama_rawat']
+    df = df[selected_features]
+    
+    # Encoding fitur kategorikal
+    encoder = LabelEncoder()
+    df['jenis_kelamin'] = encoder.fit_transform(df['jenis_kelamin'])
+    df['jenis_demam'] = encoder.fit_transform(df['jenis_demam'])
+    
+    # Normalisasi data
+    scaler = MinMaxScaler()
+    df[['trombosit', 'leukosit', 'hematokrit']] = scaler.fit_transform(df[['trombosit', 'leukosit', 'hematokrit']])
+    
+    # Imputasi KNN
+    imputer = KNNImputer(n_neighbors=5)
+    df.iloc[:, :] = imputer.fit_transform(df)
+    
+    return df
 
 if (selected2 == 'Preprocessing') :
     st.subheader('Preprocessing Data')
-
-    st.write("Data di proses dahulu sebelum dimasukkan ke model, yaitu mengubah nilai kategori menjadi nilai numerik dan mengisi nilai yang hilang menggunakan KNN Imputation.")
-    data2 = pd.read_csv('https://raw.githubusercontent.com/risma260/RISET/refs/heads/main/dataset_preprocessing.csv', sep=',')
-    data2.insert(0, 'No.', range(1, len(data2) + 1))
-    st.write(data2)
+    uploaded_file = st.file_uploader("Upload dataset", type=["csv"]) 
+    if uploaded_file is not None:
+        df = pd.read_csv(uploaded_file)
+        st.write("Data Awal:")
+        st.write(df.head())
+        
+        df_processed = preprocess_data(df)
+        st.write("Data Setelah Preprocessing:")
+        st.write(df_processed.head())
 
 #Halaman hasil pemodelan XGBoost
 if (selected2 == 'akurasi') :
     st.subheader('Akurasi Model')
+    uploaded_file = st.file_uploader("Upload dataset", type=["csv"]) 
+    if uploaded_file is not None:
+        df = pd.read_csv(uploaded_file)
+        df = preprocess_data(df)
+        
+        # Split data
+        X = df.drop(columns=['lama_rawat'])
+        y = df['lama_rawat']
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+        
+        # Hyperparameter tuning
+        param_grid = {
+            'n_estimators': [100, 200, 300],
+            'learning_rate': [0.01, 0.1, 0.2],
+            'max_depth': [3, 5, 7],
+            'subsample': [0.8, 0.9, 1.0],
+            'colsample_bytree': [0.8, 0.9, 1.0]
+        }
+        model = xgb.XGBRegressor(objective='reg:squarederror', random_state=42)
+        grid_search = GridSearchCV(model, param_grid, scoring='neg_mean_squared_error', cv=10, n_jobs=-1, verbose=1)
+        grid_search.fit(X_train, y_train)
+        
+        best_model = grid_search.best_estimator_
+        y_train_pred = best_model.predict(X_train)
+        y_test_pred = best_model.predict(X_test)
+        
+        train_mse = mean_squared_error(y_train, y_train_pred)
+        test_mse = mean_squared_error(y_test, y_test_pred)
+        
+        st.write(f"MSE Train Set: {train_mse:.4f}")
+        st.write(f"MSE Test Set: {test_mse:.4f}")
+        
+        # Plot hasil prediksi vs aktual
+        fig, ax = plt.subplots(figsize=(8,5))
+        sns.lineplot(x=range(len(y_test)), y=y_test, label='Actual')
+        sns.lineplot(x=range(len(y_test)), y=y_test_pred, label='Predicted')
+        ax.set_title("Prediksi vs Aktual")
+        ax.set_xlabel("Index")
+        ax.set_ylabel("Lama Rawat")
+        st.pyplot(fig)
 
-    
+        # Simpan model ke file pickle
+        with open('model_xgboost.pkl', 'wb') as file:
+        pickle.dump(best_model, file)
+
+        st.success("Model berhasil disimpan sebagai 'model_xgboost.pkl'!")
+
 # Halaman Implementasi
 if selected2 == 'Implementasi':
     st.subheader('Implementasi')
 
-    # Membaca model
-    dbd_model = pickle.load(open('model_xgboost.pkl', 'rb'))
-
-
+    # Load model dan scaler
+    try:
+        dbd_model = pickle.load(open('model_xgboost.pkl', 'rb'))
+        scaler = pickle.load(open('scaler.pkl', 'rb'))  # Load MinMaxScaler
+    except FileNotFoundError:
+        st.error("Model atau scaler tidak ditemukan! Pastikan file 'model_xgboost.pkl' dan 'scaler.pkl' tersedia.")
+        st.stop()
+        
     # Membagi kolom untuk input
     col1, col2 = st.columns(2)
 
