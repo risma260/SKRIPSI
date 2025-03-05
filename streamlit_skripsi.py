@@ -123,7 +123,7 @@ if (selected2 == 'akurasi') :
 
         # Simpan model ke file pickle
         with open('model_xgboost.pkl', 'wb') as file:
-        pickle.dump(best_model, file)
+            pickle.dump(best_model, file)
 
         st.success("Model berhasil disimpan sebagai 'model_xgboost.pkl'!")
 
