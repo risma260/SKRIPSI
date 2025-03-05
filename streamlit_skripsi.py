@@ -47,7 +47,7 @@ if (selected2 == 'Data') :
 @st.cache_data
 def preprocess_data(df):
     # Memilih fitur yang digunakan
-    selected_features = ['jenis_kelamin', 'jenis_demam', 'trombosit', 'leukosit', 'hematokrit', 'lama_rawat']
+    selected_features = ['jenis_kelamin','umur', 'jenis_demam', 'trombosit','hemoglobin', 'hct', 'lama_dirawat']
     df = df[selected_features]
     
     # Encoding fitur kategorikal
@@ -57,7 +57,7 @@ def preprocess_data(df):
     
     # Normalisasi data
     scaler = MinMaxScaler()
-    df[['trombosit', 'leukosit', 'hematokrit']] = scaler.fit_transform(df[['trombosit', 'leukosit', 'hematokrit']])
+    df[['jenis_kelamin','umur', 'jenis_demam', 'trombosit', 'hemoglobin', 'hct']] = scaler.fit_transform(df[['jenis_kelamin','umur', 'jenis_demam', 'trombosit', 'hemoglobin', 'hct']])
     
     # Imputasi KNN
     imputer = KNNImputer(n_neighbors=5)
