@@ -34,6 +34,9 @@ if (selected2 == 'Data') :
                 df = pd.read_csv(uploaded_file)
             else:
                 df = pd.read_excel(uploaded_file)
+
+            # Simpan dataset ke session_state agar bisa digunakan di halaman lain
+            st.session_state['uploaded_data'] = df
     
             # Tampilkan data yang telah diunggah
             st.write("### Data yang diunggah:")
@@ -65,16 +68,27 @@ def preprocess_data(df):
     
     return df
 
-if (selected2 == 'Preprocessing') :
+# Halaman Preprocessing
+if selected2 == 'Preprocessing':
     st.subheader('Preprocessing Data')
-    if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
-        st.write("Data Awal:")
+
+    # Pastikan ada data yang sudah diupload
+    if 'uploaded_data' in st.session_state:
+        df = st.session_state['uploaded_data']
+        
+        st.write("### Data Awal:")
         st.write(df.head())
         
         df_processed = preprocess_data(df)
-        st.write("Data Setelah Preprocessing:")
-        st.write(df_processed.head())
+        if df_processed is not None:
+            st.write("### Data Setelah Preprocessing:")
+            st.write(df_processed.head())
+
+            # Simpan hasil preprocessing ke session state
+            st.session_state['processed_data'] = df_processed
+
+    else:
+        st.warning("Silakan upload dataset terlebih dahulu di halaman Data.")
 
 #Halaman hasil pemodelan XGBoost
 if (selected2 == 'akurasi') :
