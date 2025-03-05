@@ -75,17 +75,16 @@ if selected2 == 'Preprocessing':
     # Pastikan ada data yang sudah diupload
     if 'uploaded_data' in st.session_state:
         df = st.session_state['uploaded_data']
-        
-        st.write("### Data Awal:")
-        st.write(df.head())
-        
-        df_processed = preprocess_data(df)
-        if df_processed is not None:
-            st.write("### Data Setelah Preprocessing:")
-            st.write(df_processed.head())
+        st.write("Data Awal:")
+        st.write(df())
 
-            # Simpan hasil preprocessing ke session state
-            st.session_state['processed_data'] = df_processed
+        df_processed = preprocess_data(df)
+
+        # Simpan hasil preprocessing ke session_state agar bisa dipakai di Akurasi
+        st.session_state['processed_data'] = df_processed
+
+        st.write("### Data Setelah Preprocessing:")
+        st.write(df_processed())
 
     else:
         st.warning("Silakan upload dataset terlebih dahulu di halaman Data.")
@@ -93,10 +92,9 @@ if selected2 == 'Preprocessing':
 #Halaman hasil pemodelan XGBoost
 if (selected2 == 'akurasi') :
     st.subheader('Akurasi Model')
-    uploaded_file = st.file_uploader("Upload dataset", type=["csv"]) 
-    if uploaded_file is not None:
-        df = pd.read_csv(uploaded_file)
-        df = preprocess_data(df)
+
+    if 'processed_data' in st.session_state:
+        df = st.session_state['processed_data']
         
         # Split data
         X = df.drop(columns=['lama_rawat'])
@@ -139,18 +137,24 @@ if (selected2 == 'akurasi') :
             pickle.dump(best_model, file)
 
         st.success("Model berhasil disimpan sebagai 'model_xgboost.pkl'!")
+    else:
+        st.warning("Silakan lakukan preprocessing data terlebih dahulu di halaman Preprocessing.")
 
 # Halaman Implementasi
 if selected2 == 'Implementasi':
     st.subheader('Implementasi')
 
-    # Load model dan scaler
-    try:
-        dbd_model = pickle.load(open('model_xgboost.pkl', 'rb'))
-        scaler = pickle.load(open('scaler.pkl', 'rb'))  # Load MinMaxScaler
-    except FileNotFoundError:
-        st.error("Model atau scaler tidak ditemukan! Pastikan file 'model_xgboost.pkl' dan 'scaler.pkl' tersedia.")
-        st.stop()
+    # Gunakan model dari session_state jika tersedia
+    if 'xgb_model' in st.session_state:
+        dbd_model = st.session_state['xgb_model']
+    else:
+        # Jika tidak ada model di session_state, baca dari file pickle
+        try:
+            dbd_model = pickle.load(open('model_xgboost.pkl', 'rb'))
+            st.session_state['xgb_model'] = dbd_model
+        except FileNotFoundError:
+            st.error("Model belum tersedia. Silakan jalankan training di halaman Akurasi terlebih dahulu.")
+            dbd_model = None
         
     # Membagi kolom untuk input
     col1, col2 = st.columns(2)
@@ -161,21 +165,15 @@ if selected2 == 'Implementasi':
         hct = st.number_input('Hematokrit (HCT %)', min_value=0.0, step=0.1)
 
     with col2:
-        hb = st.number_input('Hemoglobin (HB g/dL)', min_value=0.0, step=0.1)
+        hemoglobin = st.number_input('Hemoglobin (HB g/dL)', min_value=0.0, step=0.1)
         jenis_kelamin = st.selectbox('Jenis Kelamin', ['Laki-laki', 'Perempuan'])
-        diagnosis = st.selectbox('Jenis Demam', ['DD', 'DBD', 'DSS'])
+        jenis_demam = st.selectbox('Jenis Demam', ['DD', 'DBD', 'DSS'])
 
-    # Encoding gender dan diagnosis
-    jenis_kelamin_mapping = {'Laki-laki': 0, 'Perempuan': 1}
-    diagnosis_mapping = {'DD': 0, 'DBD': 1, 'DSS': 2}
-
-    jenis_kelamin_encoded = jenis_kelamin_mapping[jenis_kelamin]
-    diagnosis_encoded = diagnosis_mapping[diagnosis]
 
     # Membuat tombol untuk prediksi
     if st.button('Prediksi Lama Rawat Inap'):
         # Prediksi dengan model
-        prediksi_lama_rawat = dbd_model.predict([[umur, trombosit, hct, hb, jenis_kelamin_encoded, diagnosis_encoded]])
+        prediksi_lama_rawat = dbd_model.predict([[umur, trombosit, hct, hemoglobin, jenis_kelamin, jenis_demam]])
 
         # Menampilkan hasil prediksi
         st.subheader('Hasil Prediksi')
