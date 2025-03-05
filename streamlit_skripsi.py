@@ -67,7 +67,6 @@ def preprocess_data(df):
 
 if (selected2 == 'Preprocessing') :
     st.subheader('Preprocessing Data')
-    uploaded_file = st.file_uploader("Upload dataset", type=["csv"]) 
     if uploaded_file is not None:
         df = pd.read_csv(uploaded_file)
         st.write("Data Awal:")
