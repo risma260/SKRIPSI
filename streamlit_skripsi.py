@@ -13,7 +13,7 @@ import seaborn as sns
 
 
 # Judul web
-st.title('Aplikasi Prediksi Lama Rawat Inap Pasien Demam Berdarah Dalam Kategori Periode Hari')
+st.title('Aplikasi Prediksi Lama Rawat Inap Pasien Demam Berdarah')
 
 #navigasi sidebar
 # horizontal menu
@@ -76,7 +76,7 @@ if selected2 == 'Preprocessing':
     if 'uploaded_data' in st.session_state:
         df = st.session_state['uploaded_data']
         st.write("Data Awal:")
-        st.write(df())
+        st.dataframe(df)
 
         df_processed = preprocess_data(df)
 
@@ -84,7 +84,7 @@ if selected2 == 'Preprocessing':
         st.session_state['processed_data'] = df_processed
 
         st.write("### Data Setelah Preprocessing:")
-        st.write(df_processed())
+        st.dataframe(df_processed)
 
     else:
         st.warning("Silakan upload dataset terlebih dahulu di halaman Data.")
