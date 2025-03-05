@@ -9,7 +9,7 @@ st.title('Aplikasi Prediksi Lama Rawat Inap Pasien Demam Berdarah Dalam Kategori
 
 #navigasi sidebar
 # horizontal menu
-selected2 = option_menu(None, ["Data", "Preprocessing", "Hasil_model", "Implementasi"], 
+selected2 = option_menu(None, ["Data", "Preprocessing", "akurasi", "Implementasi"], 
     icons=['house', 'filter', 'graph-up', 'gear'], 
     menu_icon="cast", default_index=0, orientation="horizontal")
 
@@ -45,7 +45,7 @@ if (selected2 == 'Preprocessing') :
     st.write(data2)
 
 #Halaman hasil pemodelan XGBoost
-if (selected2 == 'Hasil_model') :
+if (selected2 == 'akurasi') :
     st.subheader('Akurasi Model')
 
     
