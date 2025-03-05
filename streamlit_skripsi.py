@@ -15,13 +15,26 @@ selected2 = option_menu(None, ["Data", "Preprocessing", "Implementasi"],
 
 #halaman Data
 if (selected2 == 'Data') :
-    st.subheader('Deskripsi Data')
+    
+    # Upload file CSV atau Excel
+    uploaded_file = st.file_uploader("Upload Dataset", type=["csv", "xlsx"])
+    
+    if uploaded_file is not None:
+        try:
+            # Baca file sesuai ekstensi
+            if uploaded_file.name.endswith(".csv"):
+                df = pd.read_csv(uploaded_file)
+            else:
+                df = pd.read_excel(uploaded_file)
+    
+            # Tampilkan data yang telah diunggah
+            st.write("### Data yang diunggah:")
+            st.dataframe(df)
+    
+        except Exception as e:
+            st.error(f"Terjadi kesalahan saat membaca file: {e}")
 
-    st.write("Dataset yang digunakan terdiri dari 6 kolom utama yang berfungsi sebagai fitur untuk memprediksi lama rawat inap (Length of Stay/LOS) pasien demam berdarah.")
-    data = pd.read_csv('https://raw.githubusercontent.com/risma260/RISET/refs/heads/main/dataset.csv', sep=';')
-    data_without_no = data.drop(columns=['NO'])
-    data_without_no.insert(0, 'No.', range(1, len(data_without_no) + 1))
-    st.write(data_without_no)
+
 
 if (selected2 == 'Preprocessing') :
     st.subheader('Preprocessing Data')
