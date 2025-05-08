@@ -11,7 +11,6 @@ import xgboost as xgb
 from sklearn.model_selection import train_test_split, GridSearchCV
 from sklearn.metrics import mean_squared_error
 import matplotlib.pyplot as plt
-import seaborn as sns
 
 
 # Judul web
@@ -20,7 +19,7 @@ st.title('Aplikasi Prediksi Lama Rawat Inap Pasien Demam Berdarah')
 #navigasi sidebar
 # horizontal menu
 selected2 = option_menu(None, ["Data", "Preprocessing", "akurasi", "Implementasi"], 
-    icons=['house', 'filter', 'graph-up', 'gear'], 
+    icons=['⚙️📊', 'filter', 'graph-up', 'gear'], 
     menu_icon="cast", default_index=0, orientation="horizontal")
 
 #halaman Data
