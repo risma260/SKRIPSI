@@ -27,17 +27,42 @@ selected2 = option_menu(None, ["Dokumentasi", "Akurasi"],
 #Halaman hasil pemodelan XGBoost
 if (selected2 == 'Dokumentasi') :
     st.subheader('Dokumentasi')
-    st.subheader("2.1 Load Dataset")
-    st.write("Berikut merupakan code yang digunakan untuk melakukan load dataset pada python")
+    st.subheader("1. Load Dataset")
+    st.write("Berikut merupakan code yang digunakan untuk menampilkan dataset")
     code = '''df = pd.read_csv("dataset_dbd.csv")'''
     st.code(code, language="python")
     st.write("Output: ")
 
     data = pd.read_csv("dataset_dbd.csv")
     st.write(data) 
+    
+    st.subheader("2. Data Cleaning")
+    st.write("Berikut merupakan code yang digunakan untuk menghapus fitur yang tidak digunakan untuk pemodelan")
 
-    st.subheader("2.2 Data Transformation")
-    st.write("Berikut merupakan code yang digunakan untuk melakukan data transformation pada python")
+    code = '''
+    # membuat fungsi untuk remove columns
+    def remove_columns(data, columns_to_remove):
+        data = data.drop(columns=columns_to_remove)
+        return data
+
+    # menghapus fitur menggunakan fungsi
+    data_final = remove_columns(data, ['tgl_masuk', 'tgl_keluar', 'rm'])
+    '''
+    st.code(code, language="python")
+
+    def remove_columns(data, columns_to_remove):
+        data = data.drop(columns=columns_to_remove)
+        return data
+        
+    data_final = remove_columns(data, ['tgl_masuk', 'tgl_keluar', 'rm'])
+    data_final.head()
+
+    st.write("Output: ")
+    data = pd.read_csv("data_removed.csv")
+    st.write(data) 
+
+    st.subheader("3. Data Transformation")
+    st.write("Berikut merupakan code yang digunakan untuk melakukan transformasi data")
 
     data['jenis_kelamin'] = data['jenis_kelamin'].map({'Laki-laki': 1, 'Perempuan': 0})
     data['jenis_demam'] = data['jenis_demam'].map({'DSS': 2, 'DBD': 1, 'DD': 0})
@@ -45,14 +70,15 @@ if (selected2 == 'Dokumentasi') :
     code = '''
     data['jenis_kelamin'] = data['jenis_kelamin'].map({'Laki-laki': 1, 'Perempuan': 0})
     data['jenis_demam'] = data['jenis_demam'].map({'DSS': 2, 'DBD': 1, 'DD': 0})
-    median_value = data['lama_dirawat'].median()
-    data['kategori_lama_dirawat'] = data['lama_dirawat'].apply(lambda x: 1 if x > median_value else 0)
     '''
     st.code(code, language="python")
-    st.write("Output: ", data)
+    st.write("Output: ")
+    data = pd.read_csv("data_encoded.csv")
+    st.write(data) 
+    
 
-    st.subheader("2.3 Imputasi Missing Value")
-    st.write("Berikut merupakan code yang digunakan untuk melakukan data transformation pada python")
+    st.subheader("4. Imputasi Missing Value")
+    st.write("Berikut merupakan code yang digunakan untuk melakukan imputasi data untuk data yang mengandung missing value")
 
     # missing_values = data.isnull().sum()
 
@@ -67,10 +93,10 @@ if (selected2 == 'Dokumentasi') :
         
     # pilih kolom yang akan dilakukan imputasi
     cols_to_impute = ['hct', 'hemoglobin']
-    cols_reference = ['jenis_kelamin', 'jenis_demam', 'trombosit', 'kategori_lama_dirawat', 'hct', 'hemoglobin']
+    cols_reference = ['jenis_kelamin', 'jenis_demam', 'umur', 'trombosit', 'lama_dirawat', 'hct', 'hemoglobin']
 
     #lakukan imputasi menggunakan function yang telah dibuat
-    impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=5)
+    impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=3)
     data.head()
     '''
     st.code(code, language="python")
@@ -85,86 +111,66 @@ if (selected2 == 'Dokumentasi') :
         
     # pilih kolom yang akan dilakukan imputasi
     cols_to_impute = ['hct', 'hemoglobin']
-    cols_reference = ['jenis_kelamin', 'jenis_demam', 'trombosit', 'kategori_lama_dirawat', 'hct', 'hemoglobin']
+    cols_reference = ['jenis_kelamin', 'jenis_demam', 'umur', 'trombosit', 'kategori_lama_dirawat', 'hct', 'hemoglobin']
 
     #lakukan imputasi menggunakan function yang telah dibuat
-    impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=5)
+    impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=3)
 
-    st.write("Output: ", data)
+    st.write("Output: ")
+    data = pd.read_csv("data_imputed.csv")
+    st.write(data) 
+    
 
-    st.subheader("2.3 Minmax Normalization")
-    st.write("Berikut merupakan code yang digunakan untuk melakukan normalisasi data pada python")
+    st.subheader("5. Normalisasi Data")
+    st.write("Berikut merupakan code yang digunakan untuk melakukan normalisasi data")
 
     # missing_values = data.isnull().sum()
 
     code = '''
-    # membuat fungsi untuk imputasi missing value
-    def normalize_columns(data, cols_to_normalize):
-        scaler = MinMaxScaler()
-        data[cols_to_normalize] = scaler.fit_transform(data[cols_to_normalize])
-        return data
-        
-    #pilih kolom yang akan dinormalisasi menggunakan fungsi sebelumnya
-    normalize_columns(data, ['umur', 'hct', 'hemoglobin', 'trombosit'])
+    # Inisialisasi MinMaxScaler untuk fitur dan target
+    scaler_x = MinMaxScaler()
+    scaler_y = MinMaxScaler()
+
+    # Mengubah format koma menjadi titik dan konversi ke float
+    data['hemoglobin'] = data['hemoglobin'].replace({',': '.'}, regex=True).astype(float)
+    data['hct'] = data['hct'].replace({',': '.'}, regex=True).astype(float)
+    data['trombosit'] = pd.to_numeric(data['trombosit'], errors='coerce')
+
+    # Tentukan fitur numerik yang ingin dinormalisasi
+    fitur_numerik = ['umur', 'hemoglobin', 'hct', 'trombosit']
+
+    # Normalisasi fitur numerik
+    data[fitur_numerik] = scaler_x.fit_transform(data[fitur_numerik])
+
+    # Normalisasi target (lama_dirawat)
+    data['lama_dirawat'] = scaler_y.fit_transform(data[['lama_dirawat']])
     '''
     st.code(code, language="python")
-
-    def normalize_columns(data, cols_to_normalize):
-        scaler = MinMaxScaler()
-        data[cols_to_normalize] = scaler.fit_transform(data[cols_to_normalize])
-        # joblib.dump(scaler, /content/drive/MyDrive/Task/Semester 8/Dataset/)
-        return data
-        
-    normalize_columns(data, ['umur', 'hct', 'hemoglobin', 'trombosit'])
 
     st.write("Output: ", data)
-
-    st.subheader("2.4 Menghapus Fitur")
-    st.write("Berikut merupakan code yang digunakan untuk menghapus fitur yang tidak diperlukan pada python")
-
-    code = '''
-    # membuat fungsi untuk remove columns
-    def remove_columns(data, columns_to_remove):
-        data = data.drop(columns=columns_to_remove)
-        return data
-
-    # menghapus fitur menggunakan fungsi
-    data_final = remove_columns(data, ['tgl_masuk', 'tgl_keluar', 'rm', 'lama_dirawat'])
-    '''
-    st.code(code, language="python")
-
-    def remove_columns(data, columns_to_remove):
-        data = data.drop(columns=columns_to_remove)
-        return data
-        
-    data_final = remove_columns(data, ['tgl_masuk', 'tgl_keluar', 'rm', 'lama_dirawat'])
-    data_final.head()
-
-    st.write("Output: ", data_final)
-
-    st.subheader("2.5 Membagi Dataset")
-    st.write("Berikut merupakan code yang digunakan untuk membagi dataset menjadi 70% training dan 30% testing pada python")
+    data = pd.read_csv("data_normalized.csv")
+    st.write(data) 
+    
+    st.subheader("6. Split Data")
+    st.write("Berikut merupakan code yang digunakan untuk membagi dataset menjadi 80% training dan 20% testing")
 
     code = '''
-    # membuat fungsi untuk remove columns
-    train_data, test_data = train_test_split(data_final, test_size=0.3, random_state=42)
+    # Pisahkan fitur dan target
+    X = data.drop(['lama_dirawat'], axis=1)  # Hapus kolom target dari fitur
+    y = data['lama_dirawat']  # Target asli
 
-    # melihat hasil pembagian data
-    print(train_data.shape)
-    print(test_data.shape)
+    # Bagi data menjadi training dan testing
+    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     '''
-
-    train_data, test_data = train_test_split(data_final, test_size=0.3, random_state=42)
 
     st.code(code, language="python")
 
     st.write("Output: ")
-    st.write("Hasil data training: ", train_data.shape)
-    st.write("Hasil data test: ", test_data.shape)
+    st.write("Jumlah data training: 678")
+    st.write("Jumlah data testing: 170")
 
-    st.subheader("2.7 Metode Tunggal")
-    st.subheader("2.7.1 K-Nearest Neighbord (KNN)")
+    st.subheader("7. Mencari Hyperparameter Terbaik")
     st.write("Berikut merupakan code yang digunakan untuk modeling data menggunakan KNN pada python")
 
     code = '''
