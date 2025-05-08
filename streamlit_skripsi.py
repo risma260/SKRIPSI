@@ -40,22 +40,12 @@ if (selected2 == 'Dokumentasi') :
     st.write("Berikut merupakan code yang digunakan untuk menghapus fitur yang tidak digunakan untuk pemodelan")
 
     code = '''
-    # membuat fungsi untuk remove columns
-    def remove_columns(data, columns_to_remove):
-        data = data.drop(columns=columns_to_remove)
+    def remove_columns(dataset, columns_to_remove):  
+        data = dataset.drop(columns=columns_to_remove)
         return data
-
-    # menghapus fitur menggunakan fungsi
-    data_final = remove_columns(data, ['tgl_masuk', 'tgl_keluar', 'rm'])
+    data = remove_columns(data, ['rm', 'tgl_masuk', 'tgl_keluar'])
     '''
     st.code(code, language="python")
-
-    def remove_columns(data, columns_to_remove):
-        data = data.drop(columns=columns_to_remove)
-        return data
-        
-    data_final = remove_columns(data, ['tgl_masuk', 'tgl_keluar', 'rm'])
-    data_final.head()
 
     st.write("Output: ")
     data = pd.read_csv("data_removed.csv")
@@ -63,13 +53,15 @@ if (selected2 == 'Dokumentasi') :
 
     st.subheader("3. Data Transformation")
     st.write("Berikut merupakan code yang digunakan untuk melakukan transformasi data")
-
-    data['jenis_kelamin'] = data['jenis_kelamin'].map({'Laki-laki': 1, 'Perempuan': 0})
-    data['jenis_demam'] = data['jenis_demam'].map({'DSS': 2, 'DBD': 1, 'DD': 0})
         
     code = '''
-    data['jenis_kelamin'] = data['jenis_kelamin'].map({'Laki-laki': 1, 'Perempuan': 0})
-    data['jenis_demam'] = data['jenis_demam'].map({'DSS': 2, 'DBD': 1, 'DD': 0})
+    # Encoding untuk fitur 'jenis_kelamin'
+    le_jenis_kelamin = LabelEncoder()
+    data['jenis_kelamin'] = le_jenis_kelamin.fit_transform(data['jenis_kelamin'])
+    
+    # Custom encoding untuk fitur 'jenis_demam'
+    jenis_demam_encode = {'DD': 0, 'DBD': 1, 'DSS': 2}
+    data['jenis_demam'] = data['jenis_demam'].map(jenis_demam_encode)
     '''
     st.code(code, language="python")
     st.write("Output: ")
@@ -109,8 +101,6 @@ if (selected2 == 'Dokumentasi') :
 
     st.subheader("5. Normalisasi Data")
     st.write("Berikut merupakan code yang digunakan untuk melakukan normalisasi data")
-
-    # missing_values = data.isnull().sum()
 
     code = '''
     # Inisialisasi MinMaxScaler untuk fitur dan target
@@ -232,11 +222,6 @@ if (selected2 == 'Dokumentasi') :
     data = pd.read_csv("data_denorm.csv")
     st.write(data) 
     
-else:
-    st.subheader('Halaman Lain')
-    st.write("Silakan pilih menu 'Prediksi' untuk melakukan prediksi.")
-
-
 
 
 
@@ -257,11 +242,11 @@ if (selected2 == 'Prediksi') :
     
     with col1:
         umur = st.number_input('Umur (tahun)', min_value=0)
-        trombosit = st.number_input('Jumlah Trombosit (x10^3/μL)', min_value=0)
-        hct = st.number_input('Hematokrit (HCT %)', min_value=0.0, step=0.1)
+        trombosit = st.number_input('Trombosit (x10^3/μL)', min_value=0)
+        hct = st.number_input('Hematokrit (%)', min_value=0.0, step=0.1)
 
     with col2:
-        hemoglobin = st.number_input('Hemoglobin (HB g/dL)', min_value=0.0, step=0.1)
+        hemoglobin = st.number_input('Hemoglobin (g/dL)', min_value=0.0, step=0.1)
         jenis_kelamin = st.selectbox('Jenis Kelamin', ['Laki-laki', 'Perempuan'])
         jenis_demam = st.selectbox('Jenis Demam', ['DD', 'DBD', 'DSS'])
     
@@ -293,6 +278,3 @@ if (selected2 == 'Prediksi') :
     
         except Exception as e:
             st.error(f"Terjadi kesalahan saat melakukan prediksi: {e}")
-else:
-    st.subheader('Halaman Lain')
-    st.write("Silakan pilih menu 'Dokumentasi' untuk melakukan melihat implementasi code.")
