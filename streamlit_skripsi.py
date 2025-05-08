@@ -22,32 +22,14 @@ selected2 = option_menu(None, ["Data", "Preprocessing", "akurasi", "Implementasi
     icons=['⚙️📊', 'filter', 'graph-up', 'gear'], 
     menu_icon="cast", default_index=0, orientation="horizontal")
 
-#halaman Data
-if (selected2 == 'Data') :
-
+# Halaman Preprocessing
+if selected2 == 'Data':
+    st.subheader('Preprocessing Data')
 # Halaman Preprocessing
 if selected2 == 'Preprocessing':
     st.subheader('Preprocessing Data')
 
-    # Pastikan ada data yang sudah diupload
-    if 'uploaded_data' in st.session_state:
-        df = st.session_state['uploaded_data']
-        st.write("Data Awal:")
-        st.dataframe(df)
-
-        df_processed, scaler = preprocess_data(df)
-
-        # Simpan hasil preprocessing dan scaler ke session_state
-        st.session_state["processed_data"] = df_processed
-        joblib.dump(scaler, "scaler.pkl")  # Simpan scaler ke file
-        st.success("Scaler berhasil disimpan sebagai 'scaler.pkl'!")
-
-        st.write("### Data Setelah Preprocessing:")
-        st.dataframe(df_processed)
-
-    else:
-        st.warning("Silakan upload dataset terlebih dahulu di halaman Data.")
-
+    
 #Halaman hasil pemodelan XGBoost
 if (selected2 == 'akurasi') :
     st.subheader('Akurasi Model')
