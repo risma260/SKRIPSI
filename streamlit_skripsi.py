@@ -18,18 +18,10 @@ st.title('Aplikasi Prediksi Lama Rawat Inap Pasien Demam Berdarah')
 
 #navigasi sidebar
 # horizontal menu
-selected2 = option_menu(None, ["Data", "Preprocessing", "akurasi", "Implementasi"], 
-    icons=['⚙️📊', 'filter', 'graph-up', 'gear'], 
+selected2 = option_menu(None, ["Dokumentasi", "Prediksi"], 
+    icons=['graph-up', 'gear'], 
     menu_icon="cast", default_index=0, orientation="horizontal")
 
-# Halaman Preprocessing
-if selected2 == 'Data':
-    st.subheader('Preprocessing Data')
-# Halaman Preprocessing
-if selected2 == 'Preprocessing':
-    st.subheader('Preprocessing Data')
-
-    
 #Halaman hasil pemodelan XGBoost
 if (selected2 == 'akurasi') :
     st.subheader('Akurasi Model')
@@ -86,61 +78,49 @@ if (selected2 == 'akurasi') :
         st.warning("Silakan lakukan preprocessing data terlebih dahulu di halaman Preprocessing.")
 
 # Halaman Implementasi
-if selected2 == "Implementasi":
-    st.subheader("Implementasi")
+# Load model dan scaler dari file .joblib
+xgb_model = joblib.load('xgb_best_model.joblib')           # Model hasil GridSearchCV
+scaler_x = joblib.load('scaler_fitur.joblib')         # Scaler untuk fitur
+scaler_y = joblib.load('scaler_target.joblib')        # Scaler untuk target
 
-    # Load model
+# Input data
+col1, col2 = st.columns(2)
+
+with col1:
+    umur = st.number_input('Umur (tahun)', min_value=0)
+    trombosit = st.number_input('Jumlah Trombosit (x10^3/μL)', min_value=0)
+    hct = st.number_input('Hematokrit (HCT %)', min_value=0.0, step=0.1)
+
+with col2:
+    hemoglobin = st.number_input('Hemoglobin (HB g/dL)', min_value=0.0, step=0.1)
+    jenis_kelamin = st.selectbox('Jenis Kelamin', ['Laki-laki', 'Perempuan'])
+    jenis_demam = st.selectbox('Jenis Demam', ['DD', 'DBD', 'DSS'])
+
+# Encoding fitur kategorikal
+jenis_kelamin_mapping = {'Laki-laki': 0, 'Perempuan': 1}
+jenis_demam_mapping = {'DD': 0, 'DBD': 1, 'DSS': 2}
+
+jenis_kelamin_encoded = jenis_kelamin_mapping[jenis_kelamin]
+jenis_demam_encoded = jenis_demam_mapping[jenis_demam]
+
+# Tombol prediksi
+if st.button('Prediksi Lama Rawat Inap'):
     try:
-        with open("model_xgboost.pkl", "rb") as file:
-            dbd_model = pickle.load(file)
-        st.success("Model berhasil dimuat.")
-    except FileNotFoundError:
-        st.error("Model belum tersedia. Silakan jalankan training di halaman Akurasi terlebih dahulu.")
-        dbd_model = None
+        # Gabungkan semua input ke dalam array
+        input_data = np.array([[umur, hemoglobin, hct, trombosit, jenis_kelamin_encoded, jenis_demam_encoded]])
 
-    # Load scaler
-    try:
-        scaler = joblib.load("scaler.pkl")
-        st.success("Scaler berhasil dimuat.")
-    except FileNotFoundError:
-        st.error("Scaler belum tersedia. Silakan jalankan preprocessing di halaman Preprocessing terlebih dahulu.")
-        scaler = None
+        # Normalisasi hanya fitur numerik (4 kolom pertama)
+        input_data[:, :4] = scaler_x.transform(input_data[:, :4])
 
-    if dbd_model and scaler:
-        col1, col2 = st.columns(2)
+        # Prediksi
+        prediksi_normal = xgb_model.predict(input_data)
 
-        with col1:
-            umur = st.number_input('Umur (tahun)', min_value=0)
-            trombosit = st.number_input('Jumlah Trombosit (x10^3/μL)', min_value=0)
-            hct = st.number_input('Hematokrit (HCT %)', min_value=0.0, step=0.1)
+        # Denormalisasi hasil prediksi
+        prediksi_lama_rawat = scaler_y.inverse_transform(prediksi_normal.reshape(-1, 1))
 
-        with col2:
-            hemoglobin = st.number_input('Hemoglobin (HB g/dL)', min_value=0.0, step=0.1)
-            jenis_kelamin = st.selectbox('Jenis Kelamin', ['Laki-laki', 'Perempuan'])
-            jenis_demam = st.selectbox('Jenis Demam', ['DD', 'DBD', 'DSS'])
+        # Tampilkan hasil prediksi
+        st.subheader('Hasil Prediksi')
+        st.write(f"Perkiraan lama rawat inap: {round(prediksi_lama_rawat[0][0])} hari")
 
-        # Encoding fitur kategorikal
-        jenis_kelamin_mapping = {'Laki-laki': 0, 'Perempuan': 1}
-        jenis_demam_mapping = {'DD': 0, 'DBD': 1, 'DSS': 2}
-
-        jenis_kelamin_encoded = jenis_kelamin_mapping[jenis_kelamin]
-        jenis_demam_encoded = jenis_demam_mapping[jenis_demam]
-
-        # Tombol prediksi
-        if st.button('Prediksi Lama Rawat Inap'):
-            try:
-                # Format input untuk prediksi
-                input_data = np.array([[umur, trombosit, hct, hemoglobin, jenis_kelamin_encoded, jenis_demam_encoded]])
-                
-                # Prediksi dengan model
-                prediksi_lama_rawat = dbd_model.predict(input_data)
-
-                # Menampilkan hasil prediksi
-                st.subheader('Hasil Prediksi')
-                st.write(f"Perkiraan lama rawat inap: {round(prediksi_lama_rawat[0])} hari")
-
-            except Exception as e:
-                st.error(f"Terjadi kesalahan saat melakukan prediksi: {e}")
-
-    else:
-        st.warning("Model belum tersedia. Silakan jalankan training di halaman Akurasi terlebih dahulu.")
+    except Exception as e:
+        st.error(f"Terjadi kesalahan saat melakukan prediksi: {e}")
