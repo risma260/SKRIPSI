@@ -18,7 +18,7 @@ st.title('Aplikasi Prediksi Lama Rawat Inap Pasien Demam Berdarah')
 
 #navigasi sidebar
 # horizontal menu
-selected2 = option_menu(None, ["Dokumentasi", "Akurasi"], 
+selected2 = option_menu(None, ["Dokumentasi", "Prediksi"], 
     icons=['graph-up', 'gear'], 
     menu_icon="cast", default_index=0, orientation="horizontal")
 
@@ -293,6 +293,6 @@ if (selected2 == 'Prediksi') :
     
         except Exception as e:
             st.error(f"Terjadi kesalahan saat melakukan prediksi: {e}")
-    else:
+else:
     st.subheader('Halaman Lain')
     st.write("Silakan pilih menu 'Dokumentasi' untuk melakukan melihat implementasi code.")
