@@ -102,20 +102,6 @@ if (selected2 == 'Dokumentasi') :
     st.code(code, language="python")
     # st.text(missing_values)
 
-    def impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=5):
-        imputer = KNNImputer(n_neighbors=n_neighbors)
-        cols_reference_numeric = data[cols_reference].select_dtypes(include=['float64', 'int64']).columns.tolist()
-        imputed_values = imputer.fit_transform(data[cols_reference_numeric + cols_to_impute])
-        data[cols_to_impute] = imputed_values[:, len(cols_reference_numeric):]
-        return data
-        
-    # pilih kolom yang akan dilakukan imputasi
-    cols_to_impute = ['hct', 'hemoglobin']
-    cols_reference = ['jenis_kelamin', 'jenis_demam', 'umur', 'trombosit', 'kategori_lama_dirawat', 'hct', 'hemoglobin']
-
-    #lakukan imputasi menggunakan function yang telah dibuat
-    impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=3)
-
     st.write("Output: ")
     data = pd.read_csv("data_imputed.csv")
     st.write(data) 
