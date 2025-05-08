@@ -232,7 +232,9 @@ if (selected2 == 'Dokumentasi') :
     data = pd.read_csv("data_denorm.csv")
     st.write(data) 
     
-
+else:
+    st.subheader('Halaman Lain')
+    st.write("Silakan pilih menu 'Prediksi' untuk melakukan prediksi.")
 
 
 
@@ -245,49 +247,52 @@ if (selected2 == 'Dokumentasi') :
 if (selected2 == 'Prediksi') :
     st.subheader('Prediksi')
     
-# Load model dan scaler dari file .joblib
-xgb_model = joblib.load('xgb_best_model.joblib')           # Model hasil GridSearchCV
-scaler_x = joblib.load('scaler_fitur.joblib')         # Scaler untuk fitur
-scaler_y = joblib.load('scaler_target.joblib')        # Scaler untuk target
+    # Load model dan scaler dari file .joblib
+    xgb_model = joblib.load('xgb_best_model.joblib')           # Model hasil GridSearchCV
+    scaler_x = joblib.load('scaler_fitur.joblib')         # Scaler untuk fitur
+    scaler_y = joblib.load('scaler_target.joblib')        # Scaler untuk target
+    
+    # Input data
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        umur = st.number_input('Umur (tahun)', min_value=0)
+        trombosit = st.number_input('Jumlah Trombosit (x10^3/μL)', min_value=0)
+        hct = st.number_input('Hematokrit (HCT %)', min_value=0.0, step=0.1)
 
-# Input data
-col1, col2 = st.columns(2)
+    with col2:
+        hemoglobin = st.number_input('Hemoglobin (HB g/dL)', min_value=0.0, step=0.1)
+        jenis_kelamin = st.selectbox('Jenis Kelamin', ['Laki-laki', 'Perempuan'])
+        jenis_demam = st.selectbox('Jenis Demam', ['DD', 'DBD', 'DSS'])
+    
+    # Encoding fitur kategorikal
+    jenis_kelamin_mapping = {'Laki-laki': 0, 'Perempuan': 1}
+    jenis_demam_mapping = {'DD': 0, 'DBD': 1, 'DSS': 2}
+    
+    jenis_kelamin_encoded = jenis_kelamin_mapping[jenis_kelamin]
+    jenis_demam_encoded = jenis_demam_mapping[jenis_demam]
 
-with col1:
-    umur = st.number_input('Umur (tahun)', min_value=0)
-    trombosit = st.number_input('Jumlah Trombosit (x10^3/μL)', min_value=0)
-    hct = st.number_input('Hematokrit (HCT %)', min_value=0.0, step=0.1)
+    # Tombol prediksi
+    if st.button('Prediksi Lama Rawat Inap'):
+        try:
+            # Gabungkan semua input ke dalam array
+            input_data = np.array([[umur, hemoglobin, hct, trombosit, jenis_kelamin_encoded, jenis_demam_encoded]])
+    
+            # Normalisasi hanya fitur numerik (4 kolom pertama)
+            input_data[:, :4] = scaler_x.transform(input_data[:, :4])
+    
+            # Prediksi
+            prediksi_normal = xgb_model.predict(input_data)
 
-with col2:
-    hemoglobin = st.number_input('Hemoglobin (HB g/dL)', min_value=0.0, step=0.1)
-    jenis_kelamin = st.selectbox('Jenis Kelamin', ['Laki-laki', 'Perempuan'])
-    jenis_demam = st.selectbox('Jenis Demam', ['DD', 'DBD', 'DSS'])
-
-# Encoding fitur kategorikal
-jenis_kelamin_mapping = {'Laki-laki': 0, 'Perempuan': 1}
-jenis_demam_mapping = {'DD': 0, 'DBD': 1, 'DSS': 2}
-
-jenis_kelamin_encoded = jenis_kelamin_mapping[jenis_kelamin]
-jenis_demam_encoded = jenis_demam_mapping[jenis_demam]
-
-# Tombol prediksi
-if st.button('Prediksi Lama Rawat Inap'):
-    try:
-        # Gabungkan semua input ke dalam array
-        input_data = np.array([[umur, hemoglobin, hct, trombosit, jenis_kelamin_encoded, jenis_demam_encoded]])
-
-        # Normalisasi hanya fitur numerik (4 kolom pertama)
-        input_data[:, :4] = scaler_x.transform(input_data[:, :4])
-
-        # Prediksi
-        prediksi_normal = xgb_model.predict(input_data)
-
-        # Denormalisasi hasil prediksi
-        prediksi_lama_rawat = scaler_y.inverse_transform(prediksi_normal.reshape(-1, 1))
-
-        # Tampilkan hasil prediksi
-        st.subheader('Hasil Prediksi')
-        st.write(f"Perkiraan lama rawat inap: {round(prediksi_lama_rawat[0][0])} hari")
-
-    except Exception as e:
-        st.error(f"Terjadi kesalahan saat melakukan prediksi: {e}")
+            # Denormalisasi hasil prediksi
+            prediksi_lama_rawat = scaler_y.inverse_transform(prediksi_normal.reshape(-1, 1))
+    
+            # Tampilkan hasil prediksi
+            st.subheader('Hasil Prediksi')
+            st.write(f"Perkiraan lama rawat inap: {round(prediksi_lama_rawat[0][0])} hari")
+    
+        except Exception as e:
+            st.error(f"Terjadi kesalahan saat melakukan prediksi: {e}")
+    else:
+    st.subheader('Halaman Lain')
+    st.write("Silakan pilih menu 'Dokumentasi' untuk melakukan melihat implementasi code.")
