@@ -24,31 +24,6 @@ selected2 = option_menu(None, ["Data", "Preprocessing", "akurasi", "Implementasi
 
 #halaman Data
 if (selected2 == 'Data') :
-    
-
-
-
-# Fungsi untuk memproses data
-@st.cache_data
-def preprocess_data(df):
-    # Memilih fitur yang digunakan
-    selected_features = ['jenis_kelamin','umur', 'jenis_demam', 'trombosit','hemoglobin', 'hct', 'lama_dirawat']
-    df = df[selected_features]
-    
-    # Encoding fitur kategorikal
-    encoder = LabelEncoder()
-    df['jenis_kelamin'] = encoder.fit_transform(df['jenis_kelamin'])
-    df['jenis_demam'] = encoder.fit_transform(df['jenis_demam'])
-    
-    # Normalisasi data
-    scaler = MinMaxScaler()
-    df[['jenis_kelamin','umur', 'jenis_demam', 'trombosit', 'hemoglobin', 'hct']] = scaler.fit_transform(df[['jenis_kelamin','umur', 'jenis_demam', 'trombosit', 'hemoglobin', 'hct']])
-    
-    # Imputasi KNN
-    imputer = KNNImputer(n_neighbors=5)
-    df.iloc[:, :] = imputer.fit_transform(df)
-    
-    return df, scaler
 
 # Halaman Preprocessing
 if selected2 == 'Preprocessing':
