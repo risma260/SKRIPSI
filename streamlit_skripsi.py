@@ -27,22 +27,22 @@ selected2 = option_menu(None, ["Dokumentasi", "Akurasi"],
 #Halaman hasil pemodelan XGBoost
 if (selected2 == 'Dokumentasi') :
     st.subheader('Dokumentasi')
-        st.subheader("2.1 Load Dataset")
-        st.write("Berikut merupakan code yang digunakan untuk melakukan load dataset pada python")
-        code = '''df = pd.read_csv("./assets/resource/dengue_fever_los_dataset.csv")'''
-        st.code(code, language="python")
-        st.write("Output: ")
+    st.subheader("2.1 Load Dataset")
+    st.write("Berikut merupakan code yang digunakan untuk melakukan load dataset pada python")
+    code = '''df = pd.read_csv("./assets/resource/dengue_fever_los_dataset.csv")'''
+    st.code(code, language="python")
+    st.write("Output: ")
 
-        data = pd.read_csv("./assets/resource/dengue_fever_los_dataset.csv")
-        st.write(data) 
+    data = pd.read_csv("dataset_dbd.csv")
+    st.write(data) 
 
-        st.subheader("2.2 Data Transformation")
-        st.write("Berikut merupakan code yang digunakan untuk melakukan data transformation pada python")
+    st.subheader("2.2 Data Transformation")
+    st.write("Berikut merupakan code yang digunakan untuk melakukan data transformation pada python")
 
-        data['jenis_kelamin'] = data['jenis_kelamin'].map({'Laki-laki': 1, 'Perempuan': 0})
-        data['jenis_demam'] = data['jenis_demam'].map({'DSS': 2, 'DBD': 1, 'DD': 0})
-        median_value = data['lama_dirawat'].median()
-        data['kategori_lama_dirawat'] = data['lama_dirawat'].apply(lambda x: 1 if x > median_value else 0)
+    data['jenis_kelamin'] = data['jenis_kelamin'].map({'Laki-laki': 1, 'Perempuan': 0})
+    data['jenis_demam'] = data['jenis_demam'].map({'DSS': 2, 'DBD': 1, 'DD': 0})
+    median_value = data['lama_dirawat'].median()
+    data['kategori_lama_dirawat'] = data['lama_dirawat'].apply(lambda x: 1 if x > median_value else 0)
         
         code = '''
         data['jenis_kelamin'] = data['jenis_kelamin'].map({'Laki-laki': 1, 'Perempuan': 0})
