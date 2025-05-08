@@ -133,7 +133,7 @@ if (selected2 == 'Dokumentasi') :
     '''
     st.code(code, language="python")
 
-    st.write("Output: ", data)
+    st.write("Output: ")
     data = pd.read_csv("data_normalized.csv")
     st.write(data) 
     
@@ -149,7 +149,6 @@ if (selected2 == 'Dokumentasi') :
     X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
     '''
-
     st.code(code, language="python")
 
     st.write("Output: ")
@@ -157,68 +156,56 @@ if (selected2 == 'Dokumentasi') :
     st.write("Jumlah data testing: 170")
 
     st.subheader("7. Mencari Hyperparameter Terbaik")
-    st.write("Berikut merupakan code yang digunakan untuk modeling data menggunakan KNN pada python")
+    st.write("Berikut merupakan code yang digunakan untuk tuning hyperparameter XGBoost menggunakan GridSearch")
 
     code = '''
-    # menggunakan model knn pada sklearn
-    knn = KNeighborsClassifier()
-
-    # menentukan parameter yang akan di tuning
-    parameters_knn = {
-        'n_neighbors': [3, 5, 7, 9, 11, 13, 15, 17, 19],
-        'metric': ['euclidean']
+    # Inisialisasi model XGBoost Regressor
+    xgb_model = xgb.XGBRegressor(objective='reg:squarederror', random_state=42)
+    
+    # Menyusun kombinasi hyperparameter yang akan diuji
+    param_grid = {
+        'learning_rate': [0.01, 0.1, 0.2, 0.3],     
+        'max_depth': [3, 4, 5, 6, 7],               
+        'n_estimators': [100, 200, 300, 400],       
+        'subsample': [0.6, 0.7, 0.8, 0.9]           
     }
 
-    # melakukan grid search pada knn
-    grid_search_knn = GridSearchCV(knn, parameters_knn, cv=kf, scoring='accuracy')
-    grid_search_knn.fit(X_train, y_train)
+    # Membuat objek GridSearchCV untuk mencari kombinasi terbaik
+    grid_search = GridSearchCV(
+        estimator=xgb_model,                       
+        param_grid=param_grid,                    
+        cv=5,                                      
+        n_jobs=-1,                                 
+    )
 
-    # menampilkan hasil parameter terbaik
-    print(grid_search_knn.best_score_)
-    print(grid_search_knn.best_params_)
-
-    # melakukan prediksi pada data testing menggunakan parameter terbaik
-    best_model_knn = grid_search_knn.best_estimator_
-    y_pred_knn = best_model_knn.predict(X_test)
+    # Melatih GridSearchCV dengan data training
+    start_time = time.time()                       
+    grid_search.fit(X_train, y_train)              
+    elapsed_time = time.time() - start_time        
 
     '''
-
     st.code(code, language="python")
 
     st.write("Output:")
-    st.text("Hasil terbaik: 0.6509614015097565 Parameter: {'metric': 'euclidean', 'n_neighbors': 9}")
+    st.text("Best Hyperparameters: {'learning_rate': 0.01, 'max_depth': 5, 'n_estimators': 100, 'subsample': 0.6}")
+    st.text("Waktu komputasi: 209.75 detik (3.50 menit)")
 
 
-    st.subheader("2.9 Evaluasi Model")
+    st.subheader("8. Evaluasi Model")
     st.write("Berikut merupakan code yang digunakan untuk melakukan evaluasi model")
 
     code = '''
-    #membuat function untuk evaluasi model
-    def evaluate_model(y_true, y_pred):
-        metrics = {
-            "Accuracy": accuracy_score(y_true, y_pred),
-            "Precission": precision_score(y_true, y_pred),
-            "Recall": recall_score(y_true, y_pred),
-            "F1-score": f1_score(y_true, y_pred)
-        }
-
-    return metrics
-
-    #melakukan evaluasi model menggunakan function
-    eval_knn  = evaluate_model(y_test, y_pred_knn)
-    eval_lr   = evaluate_model(y_test, y_pred_lr)
-    eval_svm  = evaluate_model(y_test, y_pred_svm)
-    eval_mlp  = evaluate_model(y_test, y_pred_mlp)
-
-    #menyimpan hasil evaluasi
-    metrics_base_model = {
-        "KNN" : eval_knn,
-        "LR"  : eval_lr,
-        "SVM" : eval_svm,
-        "ANN" : eval_mlp,
-    }
-
-    '''
+    # Ambil model terbaik dari GridSearchCV
+    xgb_best = grid_search.best_estimator_
+    
+    # Prediksi pada data testing
+    y_test_pred = xgb_best.predict(X_test)
+    
+    # Evaluasi model
+    mse_test = mean_squared_error(y_test, y_test_pred)
+    rmse_test = np.sqrt(mse_test)
+    
+        '''
 
     table_results = pd.DataFrame(
         [
