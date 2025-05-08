@@ -206,57 +206,32 @@ if (selected2 == 'Dokumentasi') :
     rmse_test = np.sqrt(mse_test)
     
         '''
-
-    table_results = pd.DataFrame(
-        [
-            {"Model": "KNN", "Accuracy": 0.62, "Precission": 0.44, "Recall": 0.32, "F1-Score": 0.37},
-            {"Model": "LR", "Accuracy": 0.65, "Precission": 0.52, "Recall": 0.17, "F1-Score": 0.25},
-            {"Model": "SVM", "Accuracy": 0.67, "Precission": 0.69, "Recall": 0.12, "F1-Score": 0.21},
-            {"Model": "ANN", "Accuracy": 0.65, "Precission": 0.52, "Recall": 0.18, "F1-Score": 0.26},
-        ]
-    )
-
     st.code(code, language="python")
 
     st.write("Output: ")
-
-    st.dataframe(table_results, use_container_width=True)
-
-    st.write("Berikut merupakan code yang digunakan untuk melakukan evaluasi model ensemble")
+    st.text("MSE: 0.0023")
+    st.text("RMSE: 0.0480")
+    
+    st.subheader("9. Denormalisasi")
+    st.write("Berikut merupakan code yang digunakan untuk melakukan evaluasi model")
 
     code = '''
-        
-    #melakukan evaluasi model menggunakan function
-    eval_ensemble_knn = evaluate_model(y_test, y_pred_ensemble_knn)
-    eval_ensemble_lr  = evaluate_model(y_test, y_pred_ensemble_lr)
-    eval_ensemble_svm = evaluate_model(y_test, y_pred_ensemble_svm)
-    eval_ensemble_mlp = evaluate_model(y_test, y_pred_ensemble_mlp)
-
-    #menyimpan hasil evaluasi
-    metrics_ensemble = {
-        "Ensemble KNN" : eval_ensemble_knn,
-        "Ensemble LR" : eval_ensemble_lr,
-        "Ensemble SVM" : eval_ensemble_svm,
-        "Ensemble ANN" : eval_ensemble_mlp
-    }
-
-    '''
-
-    table_results_ensemble = pd.DataFrame(
-        [
-            {"Model": "KNN", "Accuracy": 0.66, "Precission": 0.65, "Recall": 0.27, "F1-Score": 0.36},
-            {"Model": "LR", "Accuracy": 0.66, "Precission": 0.56, "Recall": 0.17, "F1-Score": 0.26},
-            {"Model": "SVM", "Accuracy": 0.62, "Precission": 0.44, "Recall": 0.32, "F1-Score": 0.37},
-            {"Model": "ANN", "Accuracy": 0.65, "Precission": 0.53, "Recall": 0.10, "F1-Score": 0.17},
-        ]
-    )
-
+    # Denormalisasi hasil prediksi dan target menggunakan min_target_asli dan max_target_asli
+    y_test_asli = y_test * (max_target_asli - min_target_asli) + min_target_asli
+    y_test_pred_asli = y_test_pred * (max_target_asli - min_target_asli) + min_target_asli
+    y_test_pred_rounded = np.round(y_test_pred_asli) # Membulatkan hasil
+    df_hasil = pd.DataFrame({
+        'Target Asli': y_test_asli,
+        'Prediksi': y_test_pred_rounded
+    })
+    
+        '''
     st.code(code, language="python")
 
     st.write("Output: ")
-
-    st.dataframe(table_results_ensemble, use_container_width=True)
-
+    data = pd.read_csv("data_denorm.csv")
+    st.write(data) 
+    
 
 
 
