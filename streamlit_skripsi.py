@@ -25,26 +25,7 @@ selected2 = option_menu(None, ["Data", "Preprocessing", "akurasi", "Implementasi
 #halaman Data
 if (selected2 == 'Data') :
     
-    # Upload file CSV atau Excel
-    uploaded_file = st.file_uploader("Upload Dataset", type=["csv", "xlsx"])
-    
-    if uploaded_file is not None:
-        try:
-            # Baca file sesuai ekstensi
-            if uploaded_file.name.endswith(".csv"):
-                df = pd.read_csv(uploaded_file)
-            else:
-                df = pd.read_excel(uploaded_file)
 
-            # Simpan dataset ke session_state agar bisa digunakan di halaman lain
-            st.session_state['uploaded_data'] = df
-    
-            # Tampilkan data yang telah diunggah
-            st.write("### Data yang diunggah:")
-            st.dataframe(df)
-    
-        except Exception as e:
-            st.error(f"Terjadi kesalahan saat membaca file: {e}")
 
 
 # Fungsi untuk memproses data
