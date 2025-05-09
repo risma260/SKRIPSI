@@ -89,7 +89,6 @@ if (selected2 == 'Dokumentasi') :
 
     #lakukan imputasi menggunakan function yang telah dibuat
     impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=3)
-    data.head()
     '''
     st.code(code, language="python")
     # st.text(missing_values)
@@ -203,7 +202,7 @@ if (selected2 == 'Dokumentasi') :
     st.text("RMSE: 0.0480")
     
     st.subheader("9. Denormalisasi")
-    st.write("Berikut merupakan code yang digunakan untuk melakukan evaluasi model")
+    st.write("Berikut merupakan code yang digunakan untuk melakukan Denormalisasi")
 
     code = '''
     # Denormalisasi hasil prediksi dan target menggunakan min_target_asli dan max_target_asli
