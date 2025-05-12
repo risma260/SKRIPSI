@@ -213,7 +213,6 @@ if (selected2 == 'Dokumentasi') :
     st.text("RMSE: 0.0480")
     
     st.subheader("9. Denormalisasi")
-    st.write("st.subheader("9. Denormalisasi")
     st.write("Denormalisasi dilakukan untuk mengembalikan nilai hasil prediksi yang sebelumnya telah dinormalisasi, sehingga hasil prediksi dapat digunakan atau dibandingkan dengan data asli.")
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
