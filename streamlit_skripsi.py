@@ -28,7 +28,7 @@ selected2 = option_menu(None, ["Dokumentasi", "Prediksi"],
 if (selected2 == 'Dokumentasi') :
     st.subheader('Dokumentasi')
     st.subheader("1. Load Dataset")
-    st.write("Berikut merupakan code yang digunakan untuk menampilkan dataset")
+    st.write("Dataset dimuat dari file CSV yang berisi data pasien demam berdarah, mencakup informasi klinis seperti umur, jenis kelamin, hasil laboratorium, dan lama rawat inap.")
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
@@ -41,7 +41,7 @@ if (selected2 == 'Dokumentasi') :
     st.write(data) 
     
     st.subheader("2. Data Cleaning")
-    st.write("Berikut merupakan code yang digunakan untuk menghapus fitur yang tidak digunakan untuk pemodelan.")
+    st.write("Proses ini dilakukan untuk menghapus fitur yang tidak digunakan dalam pemodelan.")
     
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
@@ -59,7 +59,7 @@ if (selected2 == 'Dokumentasi') :
 
 
     st.subheader("3. Data Transformation")
-    st.write("Berikut merupakan code yang digunakan untuk melakukan transformasi data")
+    st.write("Transformasi data dilakukan untuk mengonversi fitur kategorikal menjadi numerik.")
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):    
         code = '''
@@ -78,7 +78,7 @@ if (selected2 == 'Dokumentasi') :
     
 
     st.subheader("4. Imputasi Missing Value")
-    st.write("Berikut merupakan code yang digunakan untuk melakukan imputasi data untuk data yang mengandung missing value")
+    st.write("Tahap ini bertujuan untuk menangani nilai yang hilang (missing value) dalam dataset menggunakan metode KNN")
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
@@ -106,7 +106,7 @@ if (selected2 == 'Dokumentasi') :
     
 
     st.subheader("5. Normalisasi Data")
-    st.write("Berikut merupakan code yang digunakan untuk melakukan normalisasi data")
+    st.write("Normalisasi menggunakan MinMaxScaler dilakukan untuk menyelaraskan skala data agar setiap fitur berada dalam rentang yang sama.")
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
@@ -135,7 +135,7 @@ if (selected2 == 'Dokumentasi') :
     st.write(data) 
     
     st.subheader("6. Split Data")
-    st.write("Berikut merupakan code yang digunakan untuk membagi dataset menjadi 80% training dan 20% testing")
+    st.write("Dataset dibagi menjadi data latih (80%) dan data uji (20%) untuk keperluan pelatihan dan evaluasi model.")
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
@@ -154,7 +154,7 @@ if (selected2 == 'Dokumentasi') :
     st.write("Jumlah data testing: 170")
 
     st.subheader("7. Mencari Hyperparameter Terbaik")
-    st.write("Berikut merupakan code yang digunakan untuk tuning hyperparameter XGBoost menggunakan GridSearch")
+    st.write("Tuning hyperparameter dilakukan menggunakan GridSearch untuk memperoleh kombinasi parameter terbaik bagi model XGBoost.")
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
@@ -191,7 +191,7 @@ if (selected2 == 'Dokumentasi') :
 
 
     st.subheader("8. Evaluasi Model")
-    st.write("Berikut merupakan code yang digunakan untuk melakukan evaluasi model")
+    st.write("Evaluasi dilakukan untuk mengukur performa model terhadap data uji menggunakan metrik mse dan rmse.")
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
@@ -213,7 +213,8 @@ if (selected2 == 'Dokumentasi') :
     st.text("RMSE: 0.0480")
     
     st.subheader("9. Denormalisasi")
-    st.write("Berikut merupakan code yang digunakan untuk melakukan Denormalisasi")
+    st.write("st.subheader("9. Denormalisasi")
+    st.write("Denormalisasi dilakukan untuk mengembalikan nilai hasil prediksi yang sebelumnya telah dinormalisasi, sehingga hasil prediksi dapat digunakan atau dibandingkan dengan data asli.")
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
