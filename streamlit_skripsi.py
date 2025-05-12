@@ -37,19 +37,22 @@ if (selected2 == 'Dokumentasi') :
     st.write(data) 
     
     st.subheader("2. Data Cleaning")
-    st.write("Berikut merupakan code yang digunakan untuk menghapus fitur yang tidak digunakan untuk pemodelan")
-
-    code = '''
+    st.write("Berikut merupakan code yang digunakan untuk menghapus fitur yang tidak digunakan untuk pemodelan.")
+    
+    # Menambahkan collapsible expander
+    with st.expander("📄 Lihat code Python"):
+        code = '''
     def remove_columns(dataset, columns_to_remove):  
         data = dataset.drop(columns=columns_to_remove)
         return data
     data = remove_columns(data, ['rm', 'tgl_masuk', 'tgl_keluar'])
-    '''
-    st.code(code, language="python")
-
-    st.write("Output: ")
+        '''
+        st.code(code, language="python")
+    
+    st.write("Output:")
     data = pd.read_csv("data_removed.csv")
-    st.write(data) 
+    st.write(data)
+
 
     st.subheader("3. Data Transformation")
     st.write("Berikut merupakan code yang digunakan untuk melakukan transformasi data")
