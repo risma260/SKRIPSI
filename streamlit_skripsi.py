@@ -31,13 +31,13 @@ if (selected2 == 'Dokumentasi') :
     st.write("Berikut merupakan code yang digunakan untuk menampilkan dataset")
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
-    code = '''
-    df = pd.read_csv("dataset_dbd.csv")
-    '''
-    st.code(code, language="python")
-    st.write("Output: ")
-
-    data = pd.read_csv("dataset_dbd.csv")
+        code = '''
+        df = pd.read_csv("dataset_dbd.csv")
+        '''
+        st.code(code, language="python")
+        st.write("Output: ")
+    
+        data = pd.read_csv("dataset_dbd.csv")
     st.write(data) 
     
     st.subheader("2. Data Cleaning")
