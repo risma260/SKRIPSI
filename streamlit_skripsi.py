@@ -46,10 +46,10 @@ if (selected2 == 'Dokumentasi') :
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
-    def remove_columns(dataset, columns_to_remove):  
-        data = dataset.drop(columns=columns_to_remove)
-        return data
-    data = remove_columns(data, ['rm', 'tgl_masuk', 'tgl_keluar'])
+        def remove_columns(dataset, columns_to_remove):  
+            data = dataset.drop(columns=columns_to_remove)
+            return data
+        data = remove_columns(data, ['rm', 'tgl_masuk', 'tgl_keluar'])
         '''
         st.code(code, language="python")
     
@@ -71,7 +71,7 @@ if (selected2 == 'Dokumentasi') :
         jenis_demam_encode = {'DD': 0, 'DBD': 1, 'DSS': 2}
         data['jenis_demam'] = data['jenis_demam'].map(jenis_demam_encode)
         '''
-    st.code(code, language="python")
+        st.code(code, language="python")
     st.write("Output: ")
     data = pd.read_csv("data_encoded.csv")
     st.write(data) 
@@ -82,23 +82,23 @@ if (selected2 == 'Dokumentasi') :
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
-    # membuat fungsi untuk imputasi missing value
-    def impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=5):
-        imputer = KNNImputer(n_neighbors=n_neighbors)
-        cols_reference_numeric = data[cols_reference].select_dtypes(include=['float64', 'int64']).columns.tolist()
-        imputed_values = imputer.fit_transform(data[cols_reference_numeric + cols_to_impute])
-        data[cols_to_impute] = imputed_values[:, len(cols_reference_numeric):]
-        return data
-        
-    # pilih kolom yang akan dilakukan imputasi
-    cols_to_impute = ['hct', 'hemoglobin']
-    cols_reference = ['jenis_kelamin', 'jenis_demam', 'umur', 'trombosit', 'lama_dirawat', 'hct', 'hemoglobin']
-
-    #lakukan imputasi menggunakan function yang telah dibuat
-    impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=5)
-    '''
-    st.code(code, language="python")
-    # st.text(missing_values)
+        # membuat fungsi untuk imputasi missing value
+        def impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=5):
+            imputer = KNNImputer(n_neighbors=n_neighbors)
+            cols_reference_numeric = data[cols_reference].select_dtypes(include=['float64', 'int64']).columns.tolist()
+            imputed_values = imputer.fit_transform(data[cols_reference_numeric + cols_to_impute])
+            data[cols_to_impute] = imputed_values[:, len(cols_reference_numeric):]
+            return data
+            
+        # pilih kolom yang akan dilakukan imputasi
+        cols_to_impute = ['hct', 'hemoglobin']
+        cols_reference = ['jenis_kelamin', 'jenis_demam', 'umur', 'trombosit', 'lama_dirawat', 'hct', 'hemoglobin']
+    
+        #lakukan imputasi menggunakan function yang telah dibuat
+        impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=5)
+        '''
+        st.code(code, language="python")
+        # st.text(missing_values)
 
     st.write("Output: ")
     data = pd.read_csv("data_imputed.csv")
@@ -110,25 +110,25 @@ if (selected2 == 'Dokumentasi') :
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
-    # Inisialisasi MinMaxScaler untuk fitur dan target
-    scaler_x = MinMaxScaler()
-    scaler_y = MinMaxScaler()
-
-    # Mengubah format koma menjadi titik dan konversi ke float
-    data['hemoglobin'] = data['hemoglobin'].replace({',': '.'}, regex=True).astype(float)
-    data['hct'] = data['hct'].replace({',': '.'}, regex=True).astype(float)
-    data['trombosit'] = pd.to_numeric(data['trombosit'], errors='coerce')
-
-    # Tentukan fitur numerik yang ingin dinormalisasi
-    fitur_numerik = ['umur', 'hemoglobin', 'hct', 'trombosit']
-
-    # Normalisasi fitur numerik
-    data[fitur_numerik] = scaler_x.fit_transform(data[fitur_numerik])
-
-    # Normalisasi target (lama_dirawat)
-    data['lama_dirawat'] = scaler_y.fit_transform(data[['lama_dirawat']])
-    '''
-    st.code(code, language="python")
+        # Inisialisasi MinMaxScaler untuk fitur dan target
+        scaler_x = MinMaxScaler()
+        scaler_y = MinMaxScaler()
+    
+        # Mengubah format koma menjadi titik dan konversi ke float
+        data['hemoglobin'] = data['hemoglobin'].replace({',': '.'}, regex=True).astype(float)
+        data['hct'] = data['hct'].replace({',': '.'}, regex=True).astype(float)
+        data['trombosit'] = pd.to_numeric(data['trombosit'], errors='coerce')
+    
+        # Tentukan fitur numerik yang ingin dinormalisasi
+        fitur_numerik = ['umur', 'hemoglobin', 'hct', 'trombosit']
+    
+        # Normalisasi fitur numerik
+        data[fitur_numerik] = scaler_x.fit_transform(data[fitur_numerik])
+    
+        # Normalisasi target (lama_dirawat)
+        data['lama_dirawat'] = scaler_y.fit_transform(data[['lama_dirawat']])
+        '''
+        st.code(code, language="python")
 
     st.write("Output: ")
     data = pd.read_csv("data_normalized.csv")
@@ -139,15 +139,15 @@ if (selected2 == 'Dokumentasi') :
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
-    # Pisahkan fitur dan target
-    X = data.drop(['lama_dirawat'], axis=1)  # Hapus kolom target dari fitur
-    y = data['lama_dirawat']  # Target asli
-
-    # Bagi data menjadi training dan testing
-    X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
-
-    '''
-    st.code(code, language="python")
+        # Pisahkan fitur dan target
+        X = data.drop(['lama_dirawat'], axis=1)  # Hapus kolom target dari fitur
+        y = data['lama_dirawat']  # Target asli
+    
+        # Bagi data menjadi training dan testing
+        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+    
+        '''
+        st.code(code, language="python")
 
     st.write("Output: ")
     st.write("Jumlah data training: 678")
@@ -158,32 +158,32 @@ if (selected2 == 'Dokumentasi') :
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
-    # Inisialisasi model XGBoost Regressor
-    xgb_model = xgb.XGBRegressor(objective='reg:squarederror', random_state=42)
+        # Inisialisasi model XGBoost Regressor
+        xgb_model = xgb.XGBRegressor(objective='reg:squarederror', random_state=42)
+        
+        # Menyusun kombinasi hyperparameter yang akan diuji
+        param_grid = {
+            'learning_rate': [0.01, 0.1, 0.2, 0.3],     
+            'max_depth': [3, 4, 5, 6, 7],               
+            'n_estimators': [100, 200, 300, 400],       
+            'subsample': [0.6, 0.7, 0.8, 0.9]           
+        }
     
-    # Menyusun kombinasi hyperparameter yang akan diuji
-    param_grid = {
-        'learning_rate': [0.01, 0.1, 0.2, 0.3],     
-        'max_depth': [3, 4, 5, 6, 7],               
-        'n_estimators': [100, 200, 300, 400],       
-        'subsample': [0.6, 0.7, 0.8, 0.9]           
-    }
-
-    # Membuat objek GridSearchCV untuk mencari kombinasi terbaik
-    grid_search = GridSearchCV(
-        estimator=xgb_model,                       
-        param_grid=param_grid,                    
-        cv=5,                                      
-        n_jobs=-1,                                 
-    )
-
-    # Melatih GridSearchCV dengan data training
-    start_time = time.time()                       
-    grid_search.fit(X_train, y_train)              
-    elapsed_time = time.time() - start_time        
-
-    '''
-    st.code(code, language="python")
+        # Membuat objek GridSearchCV untuk mencari kombinasi terbaik
+        grid_search = GridSearchCV(
+            estimator=xgb_model,                       
+            param_grid=param_grid,                    
+            cv=5,                                      
+            n_jobs=-1,                                 
+        )
+    
+        # Melatih GridSearchCV dengan data training
+        start_time = time.time()                       
+        grid_search.fit(X_train, y_train)              
+        elapsed_time = time.time() - start_time        
+    
+        '''
+        st.code(code, language="python")
 
     st.write("Output:")
     st.text("Best Hyperparameters: {'learning_rate': 0.01, 'max_depth': 5, 'n_estimators': 100, 'subsample': 0.6}")
@@ -195,18 +195,18 @@ if (selected2 == 'Dokumentasi') :
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
-    # Ambil model terbaik dari GridSearchCV
-    xgb_best = grid_search.best_estimator_
-    
-    # Prediksi pada data testing
-    y_test_pred = xgb_best.predict(X_test)
-    
-    # Evaluasi model
-    mse_test = mean_squared_error(y_test, y_test_pred)
-    rmse_test = np.sqrt(mse_test)
-    
-        '''
-    st.code(code, language="python")
+        # Ambil model terbaik dari GridSearchCV
+        xgb_best = grid_search.best_estimator_
+        
+        # Prediksi pada data testing
+        y_test_pred = xgb_best.predict(X_test)
+        
+        # Evaluasi model
+        mse_test = mean_squared_error(y_test, y_test_pred)
+        rmse_test = np.sqrt(mse_test)
+        
+            '''
+        st.code(code, language="python")
 
     st.write("Output: ")
     st.text("MSE: 0.0023")
@@ -217,17 +217,17 @@ if (selected2 == 'Dokumentasi') :
     # Menambahkan collapsible expander
     with st.expander("📄 Lihat code Python"):
         code = '''
-    # Denormalisasi hasil prediksi dan target menggunakan min_target_asli dan max_target_asli
-    y_test_asli = y_test * (max_target_asli - min_target_asli) + min_target_asli
-    y_test_pred_asli = y_test_pred * (max_target_asli - min_target_asli) + min_target_asli
-    y_test_pred_rounded = np.round(y_test_pred_asli) # Membulatkan hasil
-    df_hasil = pd.DataFrame({
-        'Target Asli': y_test_asli,
-        'Prediksi': y_test_pred_rounded
-    })
-    
-        '''
-    st.code(code, language="python")
+        # Denormalisasi hasil prediksi dan target menggunakan min_target_asli dan max_target_asli
+        y_test_asli = y_test * (max_target_asli - min_target_asli) + min_target_asli
+        y_test_pred_asli = y_test_pred * (max_target_asli - min_target_asli) + min_target_asli
+        y_test_pred_rounded = np.round(y_test_pred_asli) # Membulatkan hasil
+        df_hasil = pd.DataFrame({
+            'Target Asli': y_test_asli,
+            'Prediksi': y_test_pred_rounded
+        })
+        
+            '''
+        st.code(code, language="python")
 
     st.write("Output: ")
     data = pd.read_csv("data_denorm.csv")
