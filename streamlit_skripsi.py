@@ -29,7 +29,11 @@ if (selected2 == 'Dokumentasi') :
     st.subheader('Dokumentasi')
     st.subheader("1. Load Dataset")
     st.write("Berikut merupakan code yang digunakan untuk menampilkan dataset")
-    code = '''df = pd.read_csv("dataset_dbd.csv")'''
+    # Menambahkan collapsible expander
+    with st.expander("📄 Lihat code Python"):
+    code = '''
+    df = pd.read_csv("dataset_dbd.csv")
+    '''
     st.code(code, language="python")
     st.write("Output: ")
 
@@ -56,7 +60,8 @@ if (selected2 == 'Dokumentasi') :
 
     st.subheader("3. Data Transformation")
     st.write("Berikut merupakan code yang digunakan untuk melakukan transformasi data")
-        
+    # Menambahkan collapsible expander
+    with st.expander("📄 Lihat code Python"):    
     code = '''
     # Encoding untuk fitur 'jenis_kelamin'
     le_jenis_kelamin = LabelEncoder()
@@ -74,9 +79,8 @@ if (selected2 == 'Dokumentasi') :
 
     st.subheader("4. Imputasi Missing Value")
     st.write("Berikut merupakan code yang digunakan untuk melakukan imputasi data untuk data yang mengandung missing value")
-
-    # missing_values = data.isnull().sum()
-
+    # Menambahkan collapsible expander
+    with st.expander("📄 Lihat code Python"):
     code = '''
     # membuat fungsi untuk imputasi missing value
     def impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=5):
@@ -91,7 +95,7 @@ if (selected2 == 'Dokumentasi') :
     cols_reference = ['jenis_kelamin', 'jenis_demam', 'umur', 'trombosit', 'lama_dirawat', 'hct', 'hemoglobin']
 
     #lakukan imputasi menggunakan function yang telah dibuat
-    impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=3)
+    impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=5)
     '''
     st.code(code, language="python")
     # st.text(missing_values)
@@ -103,7 +107,8 @@ if (selected2 == 'Dokumentasi') :
 
     st.subheader("5. Normalisasi Data")
     st.write("Berikut merupakan code yang digunakan untuk melakukan normalisasi data")
-
+    # Menambahkan collapsible expander
+    with st.expander("📄 Lihat code Python"):
     code = '''
     # Inisialisasi MinMaxScaler untuk fitur dan target
     scaler_x = MinMaxScaler()
@@ -131,7 +136,8 @@ if (selected2 == 'Dokumentasi') :
     
     st.subheader("6. Split Data")
     st.write("Berikut merupakan code yang digunakan untuk membagi dataset menjadi 80% training dan 20% testing")
-
+    # Menambahkan collapsible expander
+    with st.expander("📄 Lihat code Python"):
     code = '''
     # Pisahkan fitur dan target
     X = data.drop(['lama_dirawat'], axis=1)  # Hapus kolom target dari fitur
@@ -149,7 +155,8 @@ if (selected2 == 'Dokumentasi') :
 
     st.subheader("7. Mencari Hyperparameter Terbaik")
     st.write("Berikut merupakan code yang digunakan untuk tuning hyperparameter XGBoost menggunakan GridSearch")
-
+    # Menambahkan collapsible expander
+    with st.expander("📄 Lihat code Python"):
     code = '''
     # Inisialisasi model XGBoost Regressor
     xgb_model = xgb.XGBRegressor(objective='reg:squarederror', random_state=42)
@@ -185,7 +192,8 @@ if (selected2 == 'Dokumentasi') :
 
     st.subheader("8. Evaluasi Model")
     st.write("Berikut merupakan code yang digunakan untuk melakukan evaluasi model")
-
+    # Menambahkan collapsible expander
+    with st.expander("📄 Lihat code Python"):
     code = '''
     # Ambil model terbaik dari GridSearchCV
     xgb_best = grid_search.best_estimator_
@@ -206,7 +214,8 @@ if (selected2 == 'Dokumentasi') :
     
     st.subheader("9. Denormalisasi")
     st.write("Berikut merupakan code yang digunakan untuk melakukan Denormalisasi")
-
+    # Menambahkan collapsible expander
+    with st.expander("📄 Lihat code Python"):
     code = '''
     # Denormalisasi hasil prediksi dan target menggunakan min_target_asli dan max_target_asli
     y_test_asli = y_test * (max_target_asli - min_target_asli) + min_target_asli
