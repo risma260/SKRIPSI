@@ -30,7 +30,7 @@ if (selected2 == 'Dokumentasi') :
     st.subheader("1. Load Dataset")
     st.write("Dataset dimuat dari file CSV yang berisi data pasien demam berdarah, mencakup informasi klinis seperti umur, jenis kelamin, hasil laboratorium, dan lama rawat inap.")
     # Menambahkan collapsible expander
-    with st.expander("📄 Lihat code Python"):
+    with st.expander("📄 Lihat kode program"):
         code = '''
         df = pd.read_csv("dataset_dbd.csv")
         '''
@@ -44,7 +44,7 @@ if (selected2 == 'Dokumentasi') :
     st.write("Proses ini dilakukan untuk menghapus fitur yang tidak digunakan dalam pemodelan.")
     
     # Menambahkan collapsible expander
-    with st.expander("📄 Lihat code Python"):
+    with st.expander("📄 Lihat kode program"):
         code = '''
         def remove_columns(dataset, columns_to_remove):  
             data = dataset.drop(columns=columns_to_remove)
@@ -61,7 +61,7 @@ if (selected2 == 'Dokumentasi') :
     st.subheader("3. Data Transformation")
     st.write("Transformasi data dilakukan untuk mengonversi fitur kategorikal menjadi numerik.")
     # Menambahkan collapsible expander
-    with st.expander("📄 Lihat code Python"):    
+    with st.expander("📄 Lihat kode program"):    
         code = '''
         # Encoding untuk fitur 'jenis_kelamin'
         le_jenis_kelamin = LabelEncoder()
@@ -80,7 +80,7 @@ if (selected2 == 'Dokumentasi') :
     st.subheader("4. Imputasi Missing Value")
     st.write("Tahap ini bertujuan untuk menangani nilai yang hilang (missing value) dalam dataset menggunakan metode KNN")
     # Menambahkan collapsible expander
-    with st.expander("📄 Lihat code Python"):
+    with st.expander("📄 Lihat kode program"):
         code = '''
         # membuat fungsi untuk imputasi missing value
         def impute_missing_values(data, cols_to_impute, cols_reference, n_neighbors=5):
@@ -108,7 +108,7 @@ if (selected2 == 'Dokumentasi') :
     st.subheader("5. Normalisasi Data")
     st.write("Normalisasi menggunakan MinMaxScaler dilakukan untuk menyelaraskan skala data agar setiap fitur berada dalam rentang yang sama.")
     # Menambahkan collapsible expander
-    with st.expander("📄 Lihat code Python"):
+    with st.expander("📄 Lihat kode program"):
         code = '''
         # Inisialisasi MinMaxScaler untuk fitur dan target
         scaler_x = MinMaxScaler()
@@ -137,7 +137,7 @@ if (selected2 == 'Dokumentasi') :
     st.subheader("6. Split Data")
     st.write("Dataset dibagi menjadi data latih (80%) dan data uji (20%) untuk keperluan pelatihan dan evaluasi model.")
     # Menambahkan collapsible expander
-    with st.expander("📄 Lihat code Python"):
+    with st.expander("📄 Lihat kode program"):
         code = '''
         # Pisahkan fitur dan target
         X = data.drop(['lama_dirawat'], axis=1)  # Hapus kolom target dari fitur
@@ -156,7 +156,7 @@ if (selected2 == 'Dokumentasi') :
     st.subheader("7. Mencari Hyperparameter Terbaik")
     st.write("Tuning hyperparameter dilakukan menggunakan GridSearch untuk memperoleh kombinasi parameter terbaik bagi model XGBoost.")
     # Menambahkan collapsible expander
-    with st.expander("📄 Lihat code Python"):
+    with st.expander("📄 Lihat kode program"):
         code = '''
         # Inisialisasi model XGBoost Regressor
         xgb_model = xgb.XGBRegressor(objective='reg:squarederror', random_state=42)
@@ -193,7 +193,7 @@ if (selected2 == 'Dokumentasi') :
     st.subheader("8. Evaluasi Model")
     st.write("Evaluasi dilakukan untuk mengukur performa model terhadap data uji menggunakan metrik mse dan rmse.")
     # Menambahkan collapsible expander
-    with st.expander("📄 Lihat code Python"):
+    with st.expander("📄 Lihat kode program"):
         code = '''
         # Ambil model terbaik dari GridSearchCV
         xgb_best = grid_search.best_estimator_
@@ -215,7 +215,7 @@ if (selected2 == 'Dokumentasi') :
     st.subheader("9. Denormalisasi")
     st.write("Denormalisasi dilakukan untuk mengembalikan nilai hasil prediksi yang sebelumnya telah dinormalisasi, sehingga hasil prediksi dapat digunakan atau dibandingkan dengan data asli.")
     # Menambahkan collapsible expander
-    with st.expander("📄 Lihat code Python"):
+    with st.expander("📄 Lihat kode program"):
         code = '''
         # Denormalisasi hasil prediksi dan target menggunakan min_target_asli dan max_target_asli
         y_test_asli = y_test * (max_target_asli - min_target_asli) + min_target_asli
