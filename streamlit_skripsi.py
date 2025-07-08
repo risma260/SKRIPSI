@@ -186,7 +186,7 @@ if (selected2 == 'Dokumentasi') :
         st.code(code, language="python")
 
     st.write("Output:")
-    st.text("Best Hyperparameters: {'learning_rate': 0.01, 'max_depth': 3, 'n_estimators': 300, 'subsample': 0.7}")
+    st.text("Best Hyperparameters: {'learning_rate': 0.01, 'max_depth': 5, 'n_estimators': 100, 'subsample': 0.6}")
     st.text("Waktu komputasi: 209.75 detik (3.50 menit)")
 
 
@@ -209,8 +209,7 @@ if (selected2 == 'Dokumentasi') :
         st.code(code, language="python")
 
     st.write("Output: ")
-    st.text("MSE: 0.0103")
-    st.text("RMSE: 0.1015")
+    st.text("RMSE: 0.1107")
     
     st.subheader("9. Denormalisasi")
     st.write("Denormalisasi dilakukan untuk mengembalikan nilai hasil prediksi yang sebelumnya telah dinormalisasi, sehingga hasil prediksi dapat digunakan atau dibandingkan dengan data asli.")
