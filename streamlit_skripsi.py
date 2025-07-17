@@ -14,7 +14,7 @@ import matplotlib.pyplot as plt
 
 
 # Judul web
-st.title('Aplikasi Prediksi Lama Rawat Inap Pasien Demam Berdarah')
+st.title('Aplikasi Prediksi Lama Rawat Inap Pasien Demam Berdarah Berdasarkan Hasil Diagnostik Laboratorium Menggunakan Metode XGBoost')
 
 #navigasi sidebar
 # horizontal menu
